@@ -4,7 +4,7 @@ package.cpath = package.cpath .. ';.luarocks/lib/lua/5.2/?.so'
 
 require("./bot/utils")
 
-VERSION = '1.0'
+VERSION = '2'
 
 -- This function is called when tg receive a msg
 function on_msg_receive (msg)
@@ -21,7 +21,11 @@ function on_msg_receive (msg)
     msg = pre_process_msg(msg)
     if msg then
       match_plugins(msg)
-  --   mark_read(receiver, ok_cb, false)
+      if redis:get("bot:markread") then
+        if redis:get("bot:markread") == "on" then
+          mark_read(receiver, ok_cb, false)
+        end
+      end
     end
   end
 end
@@ -121,7 +125,7 @@ end
 function match_plugins(msg)
   for name, plugin in pairs(plugins) do
     match_plugin(plugin, name, msg)
-  end
+  endF
 end
 
 -- Check if plugin is on _config.disabled_plugin_on_chat table
@@ -209,330 +213,140 @@ function create_config( )
     "ingroup",
     "inpm",
     "banhammer",
-    "Boobs",
-    "Feedback",
-    "lock_join",
-    "antilink",
-    "antitag",
-    "gps",
-    "auto_leave",
-    "block",
-    "tagall",
-    "arabic_lock",
-    "welcome",
-    "google",
-    "sms",
-    "Debian_service",
-    "sudoers",
-    "add_admin",
+    "stats",
     "anti_spam",
-    "add_bot",
     "owners",
+    "arabic_lock",
     "set",
     "get",
     "broadcast",
     "download_media",
     "invite",
     "all",
-    "leave_ban"
+    "leave_ban",
+    "admin",
+    "lock_badw",
+    "lock_link",
+    "tag",
+    "setrank",
+    "id",
+    "tagall",
+    "SUDO",
+    "feedback",
+    "getplug",
+    "echo",
+    "plugins",
+    "time",
+    "welcome"
     },
-    sudo_users = {235717442},--Sudo users
+    sudo_users = {235717442,216001501},--Sudo users
     disabled_channels = {},
     moderation = {data = 'data/moderation.json'},
-    about_text = [[Creed bot 2.3
+    about_text = [[Sbss Bot V2 Beta
+    An Advanced Anti Spam Bot Forked On TeleSeed
     
-     Hello my Good friends 
-     
-    ‼️ this bot is made by : @creed_is_dead
-   〰〰〰〰〰〰〰〰
-   ߔࠀ   our admins are : 
-   ߔࠀ   @sorblack_creed
-   ߔࠀ   @amircc_creed
-   ߔࠀ   @aria_creed
-   〰〰〰〰〰〰〰〰
-  ♻️ You can send your Ideas and messages to Us By sending them into bots account by this command :
-   تمامی درخواست ها و همه ی انتقادات و حرفاتونو با دستور زیر بفرستین به ما
-   !feedback (your ideas and messages)
+    Develpoed By:
+    @sina7sk
+    Manager:
+    @yellowhat
+    Founder:
+    @amirho3in
+    
+    Special Thank To:
+    Mehr Pouya
+    Arman
+    IM/-\N
+    Creed Is Dead
+    
 ]],
     help_text_realm = [[
-Realm Commands:
-
-!creategroup [Name]
-Create a group
-گروه جدیدی بسازید
-
-!createrealm [Name]
-Create a realm
-گروه مادر جدیدی بسازید
-
-!setname [Name]
-Set realm name
-اسم گروه مادر را تغییر بدهید
-
-!setabout [GroupID] [Text]
-Set a group's about text
-در مورد  آن گروه توضیحاتی را بنویسید (ای دی گروه را بدهید )
-
-!setrules [GroupID] [Text]
-Set a group's rules
-در مورد آن گروه قوانینی تعیین کنید ( ای دی گروه را بدهید )
-
-!lock [GroupID] [setting]
-Lock a group's setting
-تنظیکات گروهی را قفل بکنید
-
-!unlock [GroupID] [setting]
-Unock a group's setting
-تنظیمات گروهی را از قفل در بیاورید 
-
-!wholist
-Get a list of members in group/realm
-لیست تمامی اعضای گروه رو با ای دی شون نشون میده
-
-!who
-Get a file of members in group/realm
-لیست تمامی اعضای گروه را با ای دی در فایل متنی دریافت کنید
-
-!type
-Get group type
-در مورد نقش گروه بگیرید
-
-!kill chat [GroupID]
-Kick all memebers and delete group 
-️تمامی اعضای گروه را حذف میکند 
-
-!kill realm [RealmID]
-Kick all members and delete realm
-تمامی اعضای گروه مارد را حذف میکند
-
-!addadmin [id|username]
-Promote an admin by id OR username *Sudo only
-ادمینی را اضافه بکنید
-
-
-!removeadmin [id|username]
-Demote an admin by id OR username *Sudo only
-️ادمینی را با این دستور صلب مقام میکنید 
-
-!list groups
-Get a list of all groups
-لیست تمامی گروه هارو میده
-
-!list realms
-Get a list of all realms
-لیست گروه های مادر را میدهد
-
-
-!log
-Get a logfile of current group or realm
-تمامی عملیات گروه را میدهد
-
-!broadcast [text]
-Send text to all groups ✉️
-✉️ با این دستور به تمامی گروه ها متنی را همزمان میفرستید  .
-
-!br [group_id] [text]
-This command will send text to [group_id]✉️
-با این دستور میتونید به گروه توسط ربات متنی را بفرستید 
-
-You Can user both "!" & "/" for them
-میتوانید از هردوی کاراکتر های ! و / برای دستورات استفاده کنید
-
-
+See Patterns In Github
 ]],
     help_text = [[
-bots Help for mods : Plugins
 
-Banhammer : 
+  لیست دستورات :
 
+اخراج [آیدی،کد،ریپلای] 👤
+شخص مورد نظر از گروه اخراج ميشود
+_________________________________________
+بن [آیدی،کد،ریپلای]😟
+شخص مورد نظر از گروه تحریم میشود
+_________________________________________
+حذف بن[کد]😃
+شخص مورد نظر از تحریم خارج ميشود
+_________________________________________
+لیست بن👥
+لیست افرادی که از گروه تحریم شده اند
+_________________________________________
+خروج : ترک گروه 🔫
+صاحب : نمایش آیدی مدیر گروه
+_________________________________________
+لیست : لیست کمک مدیرها😍
+_________________________________________
+ترفیع [ریپلای،یوزرنیم]
+اضافه کردن کمک مدیر
+_________________________________________
+تنزل [ریپلای،یوزرنیم]
+حذف کردن کمک مدیر
+_________________________________________
 
-Help For Banhammer دستوراتی برای کنترل گروه
+قفل [اعضا|نام|ربات |تگ|عکس|خروج|فحش]🔒
+_________________________________________
 
-!Kick @UserName or ID 
-شخصی را از گروه حذف کنید . همچنین با ریپلی هم میشه
+باز کردن [اعضا|نام|ربات |تگ|عکس|خروج|فحش]🔓
+_________________________________________
 
-!Ban @UserName or ID
-برای بن کردن شخص اسفاده میشود . با ریپلی هم میشه
+تنظیم عکس : اضافه کردن وقفل عکس گروه🌅
+_________________________________________
 
+تنظیم نام [نام]⛩
+عوض کردن نام گروه
+_________________________________________
 
-!Unban @UserName
-برای آنبن کردن شخصی استفاده میشود . همچنین با ریپلی هم میشه
+توضیحات: درباره گروه🏷
+_________________________________________
 
-For Admins :
+قوانین: قوانین گروه⚖⚖
+_________________________________________
 
-!banall ID
-برای بن گلوبال کردن از تمامی گروه هاست باید ای دی بدین با ریپلی هم میشه
+تنظیم قانون<متن>⚖
+_________________________________________
 
-!unbanall ID
-برای آنبن کردن استفاده میشود ولی فقط با ای دی میشود
+تنظیم توضیحات<متن> 
+تنظیمات: تنظیمات گروه🛠
+_________________________________________
 
-〰〰〰〰〰〰〰〰〰〰
-2. GroupManager :
+لینک جدید : تعویض لینک و ارسال درگروه🏵
+_________________________________________
 
-!lock leave
-اگر کسی از گروه برود نمیتواند برگردد
+لینک خصوصی :ارسال در چت خصوصی 💷
+_________________________________________
 
-!lock tag
-برای مجوز ندادن به اعضا از استفاده کردن @  و #  برای تگ
+لینک : لینک گروه🔖
+_________________________________________
 
+حساسیت[تعداد]
+محدودیت تعداد اسپم📯🔆
+_________________________________________
 
-!Creategp "GroupName"
-you can Create group with this comman
-با این دستور برای ساخت گروه استفاده بکنید
-
-
-!lock member
-For locking Inviting users
-برای جلوگیری از آمدن اعضای جدید استفاده میشود
-
-
-!lock bots
-for Locking Bots invitation
-برای جلوگیری از ادد کردن ربا استفاده میشود
-
-
-!lock name
-To lock the group name for every bodey
-برای قفل کردن اسم استفاده میشود
-
-!setflood set the group flood control  
-تعداد اسپم را در گروه تعیین میکنید
-
-!settings
-Watch group settings
-تنظیمات فعلی گروه را میبینید
-
-!owner
-watch group owner
-آیدی سازنده گروه رو میبینید
-
-!setowner user_id
-You can set someone to the group owner‼️
-برای گروه سازنده تعیین میکنید 
-
-!modlist
-catch Group mods
-لیست مدیران گروه را میگیرید
-
-!lock adds 
-to lock commercial Breaks and Other group links in group
-از دادن لینک گروه یا سایت یا هرچیز دیگه توی گروه جلوگیری میکند .
-
-!lock eng
-You cannot speak english in group
-از حرف زدن انگلیسی توی گروه جلوگیری میکند
-
-!lock settings
-To lock settings of group and unchange able
-برای قفل کردن تنظیمات گروه به کار میره
-
-!lock badw
-To lock using badwords in group
-برای جلوگیری از استفاده کردن حرف های رکیک استفاده میشود
+پاک کردن 
+پاکسازی مدیرها/قوانین/موضوع✏️
+_________________________________________
+ایدی [یوزرنیم]
+بازگرداندن کد آیدی🤖
+_________________________________________
 
 
-!lock join 
-to lock joining the group by link
-برای جلوگیری از وارد شدن به کروه با لینک
+تگ : صدا کردن افراد گروه🗣🗣
 
-
-!lock flood
-lock group flood
-از اسپم دادن در گروه جلوگیری کنید
-
-!unlock (bots-member-flood-photo-name-tag-link-join-Arabic)
-Unlock Something
-موارد بالا را با این دستور آزاد میسازید
-
-!rules  && !set rules
-TO see group rules or set rules
-برای دیدن قوانین گروه و یا انتخاب قوانین 
-
-!about or !set about
-watch about group or set about
-در مورد توضیحات گروه میدهد و یا توضیحات گروه رو تعیین کنید 
-
-!res @username
-see Username INfo
-در مورد اسم و ای دی شخص بهتون میده 
-
-!who
-Get Ids Chat
-همه ی ای دی های موجود در چت رو بهتون میده
-
-!log 
-get members id
-تمامی فعالیت های انجام یافته توسط شما و یا مدیران رو نشون میده
-
-!all
-Says every thing he knows about a group
-در مورد تمامی اطلاعات ثبت شده در مورد گروه میدهد
-
-
-!newlink
-Changes or Makes new group link
-لینک گروه رو عوض میکنه 
-
-!link
-gets The Group link
-لینک گروه را در گروه نمایش میده
-
-!linkpv
-sends the group link to the PV
-برای دریافت لینک در پیوی استفاده میشه 
-〰〰〰〰〰〰〰〰
-Admins :
-
-!add
-to add the group as knows
-برای مجوز دادن به ربات برای استفاده در گروه
-
-
-!rem
-to remove the group and be unknown
-برای ناشناس کردن گروه برای ربات توسط مدیران اصلی
-
-!setgpowner (Gpid) user_id
-For Set a Owner of group from realm
- برای تعیین سازنده ای برای گروه  از گروه مادر
-
-!addadmin [Username]
-to add a Global admin to the bot
-برای ادد کردن ادمین اصلی ربات
-
-
-!removeadmin [username]
-to remove an admin from global admins
-برای صلب ادمینی از ادمینای اصلی
-
-!sms [id] (text)
-To send a message to an account by his/her ID
-برای فرستادن متنی توسط ربات به شخصی با ای دی اون
-
-
-〰〰〰〰〰〰〰〰〰〰〰
-3.!stats
-To see the group stats
-برای دیدن آمار گروه 
-
-〰〰〰〰〰〰〰〰
-4. Feedback
-!feedback (text)
-To send your ideas to the Moderation group
-برای فرستادن انتقادات و پیشنهادات و حرف خود با مدیر ها استفاده میشه
-
-〰〰〰〰〰〰〰〰〰〰〰
-5. Tagall
-!tagall (text)
-To tags the every one and sends your message at bottom
-تگ کردن همه ی اعضای گروه و نوشتن پیام شما زیرش
-
-
-You Can user both "!" & "/" for them
-می توانید از دو شکلک !  و / برای دادن دستورات استفاده کنید
-
+⚠️نیاز نیست از '!' و '/' استفاده کنید*⚠️
+_________________________________________
+_________________________________________
+_________________________________________
+ليست سودوها :@Cia_00_07
+@sina7sk
+@amirho3in
 ]]
-
   }
   serialize_to_file(config, './data/config.lua')
   print('saved config into ./data/config.lua')
@@ -569,6 +383,7 @@ function load_plugins()
 
     if not ok then
       print('\27[31mError loading plugin '..v..'\27[39m')
+      print(tostring(io.popen("lua plugins/"..v..".lua"):read('*all')))
       print('\27[31m'..err..'\27[39m')
     end
 
